@@ -249,7 +249,7 @@ NRF24L01 is sensitive:
 
 ## 👨‍💻 Author
 
-Lucas CALLOVA & Christian HOYEK
+Lucas CALLOVA & Christian HOYEK & Julian DUBOSCLARD
 
 ---
 
