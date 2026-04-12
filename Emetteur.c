@@ -1,12 +1,8 @@
 #include <SPI.h>
 #include <RF24.h>
 #include <Arduino.h>
-#include <stdio.h>
-#include <string.h>
-#include <inttypes.h>
-#include <stdlib.h>
 
-RF24 radio(9, 10); // CE, CSN
+RF24 radio(7, 8); // CE, CSN
 const byte address[6] = "00001";
 
 // Joysticks
@@ -16,7 +12,7 @@ const byte address[6] = "00001";
 
 // Boutons
 #define BTN_SECU 2
-#define BTN_PID 3
+#define BTN_PID  3
 
 // Structure DATA
 struct DataPacket {
@@ -37,7 +33,7 @@ void setup() {
 
   radio.begin();
   radio.openWritingPipe(address);
-  radio.setPALevel(RF24_LOW);
+  radio.setPALevel(RF24_PA_LOW);
   radio.stopListening();
 }
 
@@ -49,17 +45,19 @@ void loop() {
 
   // Boutons PULLUP
   data.secuMoteur = !digitalRead(BTN_SECU);
-  data.pidActif    = !digitalRead(BTN_PID);
+  data.pidActif   = !digitalRead(BTN_PID);
 
-  // Envoi
-  radio.write(&data, sizeof(DataPacket));
+  // Envoi avec vérification
+  if (!radio.write(&data, sizeof(DataPacket))) {
+    Serial.println("Envoi échoué !");
+  }
 
-  // Debug
-  Serial.print("Gaz: "); Serial.print(data.joyGaucheY);
+  // Debug sur une seule ligne
+  Serial.print("Gaz: ");   Serial.print(data.joyGaucheY);
   Serial.print(" | Ail: "); Serial.print(data.joyDroitX);
   Serial.print(" | Prof: "); Serial.print(data.joyDroitY);
-  Serial.print(" | Secu: "); Serial.println(data.secuMoteur);
-  Serial.print(" | PID: "); Serial.println(data.pidActif);
+  Serial.print(" | Secu: "); Serial.print(data.secuMoteur);
+  Serial.print(" | PID: ");  Serial.println(data.pidActif);
 
-  delay(20); 
+  delay(20);
 }
